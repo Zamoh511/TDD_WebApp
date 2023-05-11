@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    img {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+        width: 150px;
+    }
+
+        img:hover {
+            box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+        }
+
+   
+
+</style>
+<div>
+    <form id="search-form">
+        <label for="location-query">Enter a location:</label>
+        <input type="text" id="location-query" name="location-query">
+        <button type="submit">Search</button>
+        <div>
+            <a href="https://www.google.com/maps/d/thumbnail?mid=1pX4qfuilVhhLxQuuYI_O1KFhXoc&hl=en">
+                <img https://www.google.com/maps/d/thumbnail?mid=1pX4qfuilVhhLxQuuYI_O1KFhXoc&hl=en" alt="Paris">
+            </a>
+        </div>
+    </form>
+</div>
+<script>
+    const form = document.getElementById('search-form');
+    const searchResults = document.getElementById('search-results');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const query = document.getElementById('location-query').value;
+
+        // send search request to API
+        fetch(`https://localhost:44316/api/Home/Index?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                // clear previous search results
+                searchResults.innerHTML = '';
+
+                // create and append new search results
+                data.forEach(landmark => {
+                    const landmarkElement = document.createElement('div');
+                    landmarkElement.classList.add('landmark');
+                    landmarkElement.innerHTML = `
+          <h2>${landmark.name}</h2>
+          <p>Latitude: ${landmark.latitude}, Longitude: ${landmark.longitude}</p>
+          <ul>
+            ${landmark.images.map(image => `<li>${image.title}: ${image.url}</li>`).join('')}
+          </ul>
+        `;
+                    searchResults.appendChild(landmarkElement);
+                });
+            })
+            .catch(error => console.error(error));
+    });
+
+
+</script>
